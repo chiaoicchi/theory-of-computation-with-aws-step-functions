@@ -1,5 +1,5 @@
 {
-  description = "DFA AWS Step Function development environment";
+  description = "AWS Step Function development environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -34,7 +34,7 @@
             export AWS_CONFIG_FILE="$PWD/.aws/config"
             export AWS_SHARED_CREDENTIALS_FILE="$PWD/.aws/credentials"
 
-            echo "DFA AWS Step Function development environment"
+            echo "AWS Step Function development environment"
             echo "  - Terraform: $(terraform version -json | jq -r '.terraform_version')"
             echo "  - aws: $(aws --version 2>&1 | cut -d ' ' -f1) (AWS config: $AWS_CONFIG_FILE)"
             echo "  - node: $(node --version 2>&1 | head -1)"
