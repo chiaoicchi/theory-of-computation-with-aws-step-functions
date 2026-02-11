@@ -1,0 +1,84 @@
+{
+  "Comment": "2-Counter Machine of |0|==|1|",
+  "QueryLanguage": "JSONata",
+  "StartAt": "Init",
+  "States": {
+    "Init": {
+      "Type": "Pass",
+      "Comment": "Initialize index and two counters",
+      "Assign": {
+        "index": 0,
+        "counterA": 0,
+        "counterB": 0
+      },
+      "Next": "Read"
+    },
+    "Read": {
+      "Type": "Choice",
+      "Comment": "Read input and update counters",
+      "Choices": [
+        {
+          "Condition": "{% $index >= $length($states.input.input) %}",
+          "Next": "Compare"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '1' %}",
+          "Assign": {
+            "index": "{% $index + 1 %}",
+            "counterA": "{% $counterA + 1 %}"
+          },
+          "Next": "Read"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '0' %}",
+          "Assign": {
+            "index": "{% $index + 1 %}",
+            "counterB": "{% $counterB + 1 %}"
+          },
+          "Next": "Read"
+        }
+      ],
+      "Default": "Violation"
+    },
+    "Compare": {
+      "Type": "Choice",
+      "Comment": "Decrement both counters until one is zero",
+      "Choices": [
+        {
+          "Condition": "{% $counterA = 0 and $counterB = 0 %}",
+          "Next": "Accept"
+        },
+        {
+          "Condition": "{% $counterA = 0 and $counterB != 0 %}",
+          "Next": "Reject"
+        },
+        {
+          "Condition": "{% $counterA != 0 and $counterB = 0 %}",
+          "Next": "Reject"
+        },
+        {
+          "Condition": "{% $counterA != 0 and $counterB != 0 %}",
+          "Assign": {
+            "counterA": "{% $counterA - 1 %}",
+            "counterB": "{% $counterB - 1 %}"
+          },
+          "Next": "Compare"
+        }
+      ],
+      "Default": "Reject"
+    },
+    "Accept": {
+      "Type": "Succeed"
+    },
+    "Reject": {
+      "Type": "Fail",
+      "Error": "NotAccepted",
+      "Cause": "Number of 1s and 0s are not equal"
+    },
+    "Violation": {
+      "Type": "Fail",
+      "Error": "AlphabetViolation",
+      "Cause": "Input contains invalid character (not in {0,1})"
+    }
+  }
+}

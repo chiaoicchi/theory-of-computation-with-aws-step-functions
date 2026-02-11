@@ -1,0 +1,119 @@
+{
+  "Comment": "DFA of 1{0,1}*0",
+  "QueryLanguage": "JSONata",
+  "StartAt": "Init",
+  "States": {
+    "Init": {
+      "Type": "Pass",
+      "Comment": "Initialize index",
+      "Assign": {
+        "index": 0
+      },
+      "Next": "q0"
+    },
+
+    "q0": {
+      "Type": "Choice",
+      "Comment": "Start state and not accept state",
+      "Choices": [
+        {
+          "Condition": "{% $index >= $length($states.input.input) %}",
+          "Next": "Reject"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '0' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q1"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '1' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q2"
+        }
+      ],
+      "Default": "Violation"
+    },
+
+    "q1": {
+      "Type": "Choice",
+      "Comment": "Not accept state",
+      "Choices": [
+        {
+          "Condition": "{% $index >= $length($states.input.input) %}",
+          "Next": "Reject"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '0' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q1"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '1' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q1"
+        }
+      ],
+      "Default": "Violation"
+    },
+
+    "q2": {
+      "Type": "Choice",
+      "Comment": "Not accept state",
+      "Choices": [
+        {
+          "Condition": "{% $index >= $length($states.input.input) %}",
+          "Next": "Reject"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '0' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q3"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '1' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q2"
+        }
+      ],
+      "Default": "Violation"
+    },
+
+    "q3": {
+      "Type": "Choice",
+      "Comment": "Accept state",
+      "Choices": [
+        {
+          "Condition": "{% $index >= $length($states.input.input) %}",
+          "Next": "Accept"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '0' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q3"
+        },
+        {
+          "Condition": "{% $substring($states.input.input, $index, 1) = '1' %}",
+          "Assign": { "index": "{% $index + 1 %}" },
+          "Next": "q2"
+        }
+      ],
+      "Default": "Violation"
+      },
+
+    "Accept": {
+      "Type": "Succeed"
+    },
+
+    "Reject": {
+      "Type": "Fail",
+      "Error": "NotAccepted",
+      "Cause": "String does not match 1{0,1}*0"
+    },
+
+    "Violation": {
+      "Type": "Fail",
+      "Error": "AlphabetViolation",
+      "Cause": "Input contains invalid character (not in {0,1})"
+    }
+  }
+}
